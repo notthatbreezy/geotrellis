@@ -55,12 +55,17 @@ trait RasterRDDWriter[K] {
     val newGroup: java.util.Set[Text] = Set(new Text(layerId.name))
     ops.setLocalityGroups(tileTable, groups.updated(tileTable, newGroup))
 
-    val splits = getSplits(layerId, layerMetaData.rasterMetaData, keyBounds, kIndex)
+    val splits = getSplits(layerId, layerMetaData.rasterMetaData, keyBounds, kIndex, 7)
+
     instance.connector.tableOperations().addSplits(tileTable, new java.util.TreeSet(splits.map(new Text(_))))
 
     val job = Job.getInstance(sc.hadoopConfiguration)
     instance.setAccumuloConfig(job)
-    AccumuloOutputFormat.setBatchWriterOptions(job, new BatchWriterConfig())
+    val batchWriterConfig = new BatchWriterConfig()
+    batchWriterConfig.setMaxMemory(5000000000L)
+    batchWriterConfig.setMaxWriteThreads(16)
+
+    AccumuloOutputFormat.setBatchWriterOptions(job, batchWriterConfig)
     AccumuloOutputFormat.setDefaultTableName(job, tileTable)
     encode(layerId, raster, kIndex)
       .saveAsNewAPIHadoopFile(instance.instanceName, classOf[Text], classOf[Mutation], classOf[AccumuloOutputFormat], job.getConfiguration)
