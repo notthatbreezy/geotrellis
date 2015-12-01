@@ -21,6 +21,7 @@ import geotrellis.vector._
 import geotrellis.proj4._
 
 import geotrellis.spark.tiling._
+import geotrellis.spark.ingest.IngestKey
 
 import org.apache.spark.rdd._
 
@@ -56,6 +57,12 @@ package object spark {
       key &|-> _temporalComponent.lens set(temporalKey)
   }
 
+  // implicit class IngestKeyWrapper[K: IngestKey](key: K) {
+  //   val _ingestKey = implicitly[IngestKey[K]]
+
+  //   def getExtent(): ProjectedExtent = key &|-> _ingestKey.lens get
+
+  // }
   type TileBounds = GridBounds
 
   implicit class toPipe[A](x : A) {
