@@ -63,7 +63,7 @@ import scala.reflect.ClassTag
     val keyExtent: Extent = mapTransform(SpatialKey(x, y))
 
     val index: fs2.Stream[IO, GeoTiffMetadata] =
-      fs2.Stream.fromIterator[IO, GeoTiffMetadata](attributeStore.query(layerId.name, ProjectedExtent(keyExtent, layoutScheme.crs)).toIterator)
+      fs2.Stream.fromIterator[IO](attributeStore.query(layerId.name, ProjectedExtent(keyExtent, layoutScheme.crs)).toIterator)
 
     val readRecord: GeoTiffMetadata => fs2.Stream[IO, Option[Raster[V]]] = { md =>
       fs2.Stream eval IO.shift(ec) *> IO {
@@ -103,7 +103,7 @@ import scala.reflect.ClassTag
         .layout
 
     val index: fs2.Stream[IO, GeoTiffMetadata] =
-      fs2.Stream.fromIterator[IO, GeoTiffMetadata](attributeStore.query(layerId.name).toIterator)
+      fs2.Stream.fromIterator[IO](attributeStore.query(layerId.name).toIterator)
 
     val readRecord: GeoTiffMetadata => fs2.Stream[IO, Raster[V]] = { md =>
       fs2.Stream eval IO.shift(ec) *> IO {

@@ -110,7 +110,7 @@ object CassandraRDDWriter {
               val writeStatement = session.prepare(writeQuery)
 
               val rows: fs2.Stream[IO, (BigInt, Vector[(K,V)])] =
-                fs2.Stream.fromIterator[IO, (BigInt, Vector[(K, V)])](
+                fs2.Stream.fromIterator[IO](
                   partition.map { case (key, value) => (key, value.toVector) }
                 )
 

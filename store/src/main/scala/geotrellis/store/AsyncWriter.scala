@@ -46,7 +46,7 @@ abstract class AsyncWriter[Client, V, E](executionContext: => ExecutionContext =
     implicit val timer = IO.timer(ec)
     implicit val cs    = IO.contextShift(ec)
 
-    val rows: fs2.Stream[IO, (String, V)] = fs2.Stream.fromIterator[IO, (String, V)](partition)
+    val rows: fs2.Stream[IO, (String, V)] = fs2.Stream.fromIterator[IO](partition)
 
     def elaborateRow(row: (String, V)): fs2.Stream[IO, (String, V)] = {
       val foldUpdate: ((String, V)) => (String, V) = { case newRecord @ (key, newValue) =>
@@ -73,7 +73,9 @@ abstract class AsyncWriter[Client, V, E](executionContext: => ExecutionContext =
     def retire(row: (String, E)): fs2.Stream[IO, Try[Long]] = {
       val writeTask = IO(writeRecord(client, row._1, row._2))
       import geotrellis.store.util.IOUtils._
-      fs2.Stream eval IO.shift(ec) *> retryFunc.fold(writeTask)(writeTask.retryEBO(_))
+      fs2.Stream eval IO.shift(ec) *> retryFunc.fold(writeTask)(
+        writeTask.retryEBO(_)
+      )
     }
 
     rows

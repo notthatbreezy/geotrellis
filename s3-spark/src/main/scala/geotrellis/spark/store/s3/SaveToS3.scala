@@ -74,7 +74,7 @@ object SaveToS3 {
     rdd.foreachPartition { partition =>
       val s3client = s3Client
       val requests: fs2.Stream[IO, (PutObjectRequest, RequestBody)] =
-        fs2.Stream.fromIterator[IO, (PutObjectRequest, RequestBody)](
+        fs2.Stream.fromIterator[IO](
           partition.map { case (key, data) =>
             val bytes = ev(data)
             val (bucket, path) = keyToPrefix(key)

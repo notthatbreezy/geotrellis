@@ -53,7 +53,7 @@ object AccumuloCollectionReader {
     implicit val ec = executionContext
     implicit val cs = IO.contextShift(ec)
 
-    val range: fs2.Stream[IO, AccumuloRange] = fs2.Stream.fromIterator[IO, AccumuloRange](ranges)
+    val range: fs2.Stream[IO, AccumuloRange] = fs2.Stream.fromIterator[IO](ranges)
 
     val read = { range: AccumuloRange => fs2.Stream eval IO.shift(ec) *> IO {
       val scanner = instance.connector.createScanner(table, new Authorizations())

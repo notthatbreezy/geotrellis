@@ -124,7 +124,7 @@ class SocketWriteStrategy(
         val writer = instance.connector.createBatchWriter(table, kwConfig.value)
 
         try {
-          val mutations: fs2.Stream[IO, Mutation] = fs2.Stream.fromIterator[IO, Mutation](
+          val mutations: fs2.Stream[IO, Mutation] = fs2.Stream.fromIterator[IO](
             partition.map { case (key, value) =>
               val mutation = new Mutation(key.getRow)
               mutation.put(key.getColumnFamily, key.getColumnQualifier, System.currentTimeMillis(), value)

@@ -85,7 +85,7 @@ class S3RDDWriter(
         implicit val cs    = IO.contextShift(ec)
 
         val rows: fs2.Stream[IO, (String, Vector[(K, V)])] =
-          fs2.Stream.fromIterator[IO, (String, Vector[(K, V)])](
+          fs2.Stream.fromIterator[IO](
             partition.map { case (key, value) => (key, value.toVector) }
           )
 
